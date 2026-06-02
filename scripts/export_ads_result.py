@@ -29,7 +29,26 @@ def parse_args() -> argparse.Namespace:
 
 def run_beeline(container: str, jdbc_url: str, database: str) -> str:
     """在 Hive 容器内执行查询，并返回 csv2 格式的标准输出。"""
-    query = f"USE {database}; SELECT * FROM ads_category_sales_ratio ORDER BY sales_amount_rank;"
+    query = f"""
+    USE {database};
+    SELECT
+      category_name_en AS category_name_en,
+      sales_quantity AS sales_quantity,
+      sales_amount AS sales_amount,
+      sales_amount_with_freight AS sales_amount_with_freight,
+      order_count AS order_count,
+      product_count AS product_count,
+      quantity_ratio AS quantity_ratio,
+      sales_amount_ratio AS sales_amount_ratio,
+      sales_amount_rank AS sales_amount_rank,
+      CASE
+        WHEN sales_amount_rank <= 10 THEN 'core'
+        WHEN sales_amount_rank <= 30 THEN 'support'
+        ELSE 'weak'
+      END AS category_type_code
+    FROM ads_category_sales_ratio
+    ORDER BY sales_amount_rank;
+    """
     command = [
         "docker",
         "exec",
@@ -64,6 +83,7 @@ def write_csv(rows: list[list[str]], output: Path) -> None:
     if not rows:
         raise RuntimeError("Hive 查询没有返回任何可导出的 ADS 数据。")
 
+    rows[0] = [column.split(".")[-1] for column in rows[0]]
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8-sig", newline="") as file:
         writer = csv.writer(file)

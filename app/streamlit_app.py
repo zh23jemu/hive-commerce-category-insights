@@ -28,6 +28,13 @@ def load_result(path: Path) -> pd.DataFrame:
         return pd.DataFrame()
 
     data = pd.read_csv(path)
+    if "category_type_code" in data.columns:
+        # Hive 容器内 beeline 在部分 Windows 终端会把中文输出编码打乱，因此导出时使用稳定的英文编码，
+        # 页面加载后再映射为中文展示，保证图表和表格始终可读。
+        data["category_type"] = data["category_type_code"].map(
+            {"core": "核心类目", "support": "辅助类目", "weak": "弱势类目"}
+        ).fillna(data["category_type_code"])
+
     numeric_columns = [
         "sales_quantity",
         "sales_amount",
@@ -127,4 +134,3 @@ if result.empty:
     render_empty_state()
 else:
     render_dashboard(result)
-

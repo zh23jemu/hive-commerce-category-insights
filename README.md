@@ -9,7 +9,7 @@
 - Python：项目脚本和可视化主语言。
 - PySpark：清洗订单、商品、类目等多表数据，生成类目销售明细宽表。
 - Docker：本地搭建 HDFS、Hive、Spark 环境。
-- HDFS：存放原始数据和分层数据。
+- Docker Hive：本地容器中执行 Hive 分层建模和聚合统计。
 - Hive：建立 ODS、DWD、DWS、ADS 分层表并执行聚合统计。
 - Streamlit + Plotly：展示类目销售额占比、销量排行和明细表。
 
@@ -54,10 +54,10 @@ py -3.11 -m venv .venv
 docker compose -f docker\docker-compose.yml up -d
 ```
 
-4. 上传原始 CSV 到 HDFS。
+4. 准备 Hive 外部表目录。
 
 ```powershell
-.venv\Scripts\python.exe scripts\upload_to_hdfs.py
+.venv\Scripts\python.exe scripts\prepare_hive_external_dirs.py
 ```
 
 5. 运行 PySpark 清洗任务。
@@ -99,4 +99,4 @@ docker compose -f docker\docker-compose.yml up -d
 - Docker 首次启动需要拉取镜像，耗时取决于网络环境。
 - `scripts/export_ads_result.py` 默认通过 Docker 容器内的 `beeline` 导出 ADS 结果，避免 Windows 本机安装 Hive SASL 客户端。
 - Streamlit 默认读取 `data/exports/ads_category_sales_ratio.csv`，因此需要先导出 ADS 结果。
-- Hive ODS 表默认读取 HDFS 的 `/data/olist/raw/` 目录，因此需要先执行 `scripts/upload_to_hdfs.py`。
+- Hive ODS 表默认读取容器内挂载的 `/workspace/data/raw/olist/ods_*` 目录，因此需要先执行 `scripts/prepare_hive_external_dirs.py`。

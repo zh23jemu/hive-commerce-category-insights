@@ -16,10 +16,10 @@
 
 ## 当前架构
 
-当前项目已完成首版工程骨架，采用 Python + PySpark + Docker HDFS/Hive + Streamlit 架构：
+当前项目已完成首版工程骨架，并已验证本地 Docker Hive/Spark + Streamlit 链路：
 
 - 原始层：保存公开电商 CSV 原始数据。
-- HDFS 层：通过 Docker NameNode / DataNode 存放 Olist 原始 CSV。
+- Docker 数据层：项目目录挂载到 Hive 容器 `/workspace`，Hive 外部表读取 `data/raw/olist/ods_*` 目录。
 - 清洗层：使用 PySpark 完成订单、商品、类目等表的关联、空值处理和字段规整。
 - 明细层：生成类目销售明细宽表，包含类目、订单、商品、销量、销售额等字段。
 - 汇总层：使用 Hive SQL 统计销售量占比、销售额占比、类目排名、核心类目和弱势类目。
@@ -41,7 +41,7 @@
 
 ## Current Status
 
-已完成项目首版落地实现，并准备初始化 Git 仓库与提交首版。仓库已包含 Docker Compose 本地大数据环境、Olist 数据准备脚本、PySpark 类目销售清洗脚本、Hive ODS/DWD/DWS/ADS 分层 SQL、ADS 导出脚本、Pandas 本地演示结果生成脚本、Streamlit 可视化页面和 README 运行说明。已解压并校验 Olist 9 个 CSV，已用 Pandas 生成本地 ADS 演示结果，Streamlit 页面已在 `http://localhost:8501` 通过 HTTP 冒烟检查。
+已完成 Docker 全链路验证。当前使用 Apache 官方 `apache/hive:4.0.1` 与 `apache/spark:3.5.3` 镜像，Docker Compose 可启动 HiveServer2、Spark Master、Spark Worker。Hive SQL 已成功创建 ODS、DWD、DWS、ADS 分层表，其中 DWD 明细表 112,650 行，DWS 汇总表 74 行，ADS 展示表 74 行。已从 Hive 导出 `data/exports/ads_category_sales_ratio.csv`，Streamlit 页面在 `http://localhost:8501` 可访问。
 
 ## Recent Changes
 
@@ -54,19 +54,21 @@
 - 新增 Hive 分层 SQL：ODS 原始表、DWD 类目销售明细表、DWS 类目汇总表、ADS 类目销售占比表。
 - 新增 Streamlit 可视化应用和 README 运行说明。
 - 准备初始化 Git 仓库并提交首版项目代码、配置、SQL、说明文档和 Olist 数据压缩包。
+- 将 Docker Compose 从被镜像代理阻断的 `bde2020/*`、`bitnami/spark` 镜像切换为 Apache 官方 Hive/Spark 镜像。
+- 新增 `scripts/prepare_hive_external_dirs.py`，为 Hive 外部表准备稳定目录。
+- 修正 ADS 导出脚本，去除 Hive CSV 表名前缀，并使用 `category_type_code` 避免 beeline 中文编码污染。
 
 ## Next TODO
 
-- 启动 Docker Compose，验证 HDFS、Hive、Spark 容器在本机环境中能正常运行。
-- 执行 `scripts/upload_to_hdfs.py`，把 Olist 原始 CSV 上传到 HDFS `/data/olist/raw/`。
-- 执行 `scripts/run_hive_sql.py`，验证 Hive ODS/DWD/DWS/ADS 分层 SQL 全链路。
+- 按 README 运行流程复现系统，生成课程演示截图。
 - 如需正式 Spark 写出，优先在 Docker Spark 环境中运行 PySpark，避免 Windows 本机 `winutils.exe` 问题。
 - 根据课程报告需要补充架构图、流程图和指标解释。
-- 首版提交完成后，如需远端同步，再根据用户明确要求配置远程仓库并推送。
+- 将本次 Docker 验证修正提交并推送到远程公共仓库。
 
 ## Open Issues
 
-- Docker 全链路尚未在本轮启动验证，后续需要确认镜像拉取、容器健康状态和 HiveServer2 连接。
+- 原始计划中的 bde2020 Hadoop/Hive 镜像和 bitnami Spark 镜像在当前 Docker 镜像代理下返回 403，已切换为 Apache 官方镜像。
+- 当前验证链路未单独启动 HDFS NameNode/DataNode，而是用 Docker 挂载目录作为 Hive 外部表数据源；如课程强制要求展示 HDFS，可后续补充官方 Hadoop 容器启动脚本。
 - Windows 本机直接运行 PySpark 写出文件会遇到 `HADOOP_HOME` / `winutils.exe` 缺失问题；当前已提供 Pandas 本地 ADS 演示脚本，正式大数据链路建议放到 Docker Spark 环境运行。
 - Olist 类目名称当前使用英文翻译表，若报告或页面需要中文类目名，需要额外补充中英文映射。
 
@@ -77,3 +79,4 @@
 - Hive 侧重点放在分层存储、聚合统计和占比分析，贴合“基于 Hive 的电商商品类目销售占比分析与可视化”主题。
 - 本机 Python 不直接依赖 PyHive/SASL，Hive SQL 执行和 ADS 导出默认通过 Docker 容器内 beeline 完成，以降低 Windows 环境编译风险。
 - 保留 Pandas 本地 ADS 生成脚本作为可视化快速验证入口，但课程主线仍以 PySpark + Hive 为准。
+- Docker 默认采用 Apache 官方 Hive/Spark 镜像，优先保证本地可拉取、可运行、可复现。

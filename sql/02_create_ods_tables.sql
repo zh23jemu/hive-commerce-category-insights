@@ -17,7 +17,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_orders_dataset'
+LOCATION '/workspace/data/raw/olist/ods_orders'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_order_items (
@@ -36,7 +36,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_order_items_dataset'
+LOCATION '/workspace/data/raw/olist/ods_order_items'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_products (
@@ -57,7 +57,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_products_dataset'
+LOCATION '/workspace/data/raw/olist/ods_products'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_product_category_translation (
@@ -71,7 +71,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/product_category_name_translation'
+LOCATION '/workspace/data/raw/olist/ods_product_category_translation'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_customers (
@@ -88,7 +88,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_customers_dataset'
+LOCATION '/workspace/data/raw/olist/ods_customers'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_sellers (
@@ -104,7 +104,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_sellers_dataset'
+LOCATION '/workspace/data/raw/olist/ods_sellers'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_order_payments (
@@ -121,7 +121,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_order_payments_dataset'
+LOCATION '/workspace/data/raw/olist/ods_order_payments'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_order_reviews (
@@ -140,7 +140,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_order_reviews_dataset'
+LOCATION '/workspace/data/raw/olist/ods_order_reviews'
 TBLPROPERTIES ("skip.header.line.count" = "1");
 
 CREATE EXTERNAL TABLE IF NOT EXISTS ods_geolocation (
@@ -157,5 +157,5 @@ WITH SERDEPROPERTIES (
   "escapeChar" = "\\"
 )
 STORED AS TEXTFILE
-LOCATION '/data/olist/raw/olist_geolocation_dataset'
+LOCATION '/workspace/data/raw/olist/ods_geolocation'
 TBLPROPERTIES ("skip.header.line.count" = "1");
