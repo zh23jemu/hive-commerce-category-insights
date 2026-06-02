@@ -41,7 +41,7 @@
 
 ## Current Status
 
-已完成 Docker 全链路验证。当前使用 Apache 官方 `apache/hive:4.0.1` 与 `apache/spark:3.5.3` 镜像，Docker Compose 可启动 HiveServer2、Spark Master、Spark Worker。Hive SQL 已成功创建 ODS、DWD、DWS、ADS 分层表，其中 DWD 明细表 112,650 行，DWS 汇总表 74 行，ADS 展示表 74 行。已从 Hive 导出 `data/exports/ads_category_sales_ratio.csv`，Streamlit 页面在 `http://localhost:8501` 可访问。
+已完成 Docker 全链路验证。当前使用 Apache 官方 `apache/hive:4.0.1` 与 `apache/spark:3.5.3` 镜像，Docker Compose 可启动 HiveServer2、Spark Master、Spark Worker。Hive SQL 已成功创建 ODS、DWD、DWS、ADS 分层表，其中 DWD 明细表 112,650 行，DWS 汇总表 74 行，ADS 展示表 74 行。已从 Hive 导出 `data/exports/ads_category_sales_ratio.csv`。Windows 默认端口 8501 可能触发 `WinError 10013`，当前推荐用 `http://127.0.0.1:18501` 访问 Streamlit。
 
 ## Recent Changes
 
@@ -57,6 +57,7 @@
 - 将 Docker Compose 从被镜像代理阻断的 `bde2020/*`、`bitnami/spark` 镜像切换为 Apache 官方 Hive/Spark 镜像。
 - 新增 `scripts/prepare_hive_external_dirs.py`，为 Hive 外部表准备稳定目录。
 - 修正 ADS 导出脚本，去除 Hive CSV 表名前缀，并使用 `category_type_code` 避免 beeline 中文编码污染。
+- 更新 Streamlit 启动说明，默认使用 `127.0.0.1:18501`，规避 Windows 上 8501 端口权限或占用问题。
 
 ## Next TODO
 
@@ -64,12 +65,14 @@
 - 如需正式 Spark 写出，优先在 Docker Spark 环境中运行 PySpark，避免 Windows 本机 `winutils.exe` 问题。
 - 根据课程报告需要补充架构图、流程图和指标解释。
 - 将本次 Docker 验证修正提交并推送到远程公共仓库。
+- 使用 `18501` 端口启动 Streamlit 并生成课程演示截图。
 
 ## Open Issues
 
 - 原始计划中的 bde2020 Hadoop/Hive 镜像和 bitnami Spark 镜像在当前 Docker 镜像代理下返回 403，已切换为 Apache 官方镜像。
 - 当前验证链路未单独启动 HDFS NameNode/DataNode，而是用 Docker 挂载目录作为 Hive 外部表数据源；如课程强制要求展示 HDFS，可后续补充官方 Hadoop 容器启动脚本。
 - Windows 本机直接运行 PySpark 写出文件会遇到 `HADOOP_HOME` / `winutils.exe` 缺失问题；当前已提供 Pandas 本地 ADS 演示脚本，正式大数据链路建议放到 Docker Spark 环境运行。
+- Windows 上 Streamlit 默认端口 8501 可能触发 `WinError 10013`；推荐显式指定 `--server.port 18501 --server.address 127.0.0.1`。
 - Olist 类目名称当前使用英文翻译表，若报告或页面需要中文类目名，需要额外补充中英文映射。
 
 ## Architecture Decisions

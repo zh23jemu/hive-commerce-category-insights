@@ -82,7 +82,13 @@ docker compose -f docker\docker-compose.yml up -d
 
 ```powershell
 .venv\Scripts\python.exe scripts\export_ads_result.py
-.venv\Scripts\python.exe -m streamlit run app\streamlit_app.py
+.venv\Scripts\python.exe -m streamlit run app\streamlit_app.py --server.port 18501 --server.address 127.0.0.1
+```
+
+启动后访问：
+
+```text
+http://127.0.0.1:18501
 ```
 
 ## 关键统计口径
@@ -100,3 +106,4 @@ docker compose -f docker\docker-compose.yml up -d
 - `scripts/export_ads_result.py` 默认通过 Docker 容器内的 `beeline` 导出 ADS 结果，避免 Windows 本机安装 Hive SASL 客户端。
 - Streamlit 默认读取 `data/exports/ads_category_sales_ratio.csv`，因此需要先导出 ADS 结果。
 - Hive ODS 表默认读取容器内挂载的 `/workspace/data/raw/olist/ods_*` 目录，因此需要先执行 `scripts/prepare_hive_external_dirs.py`。
+- 如果 Streamlit 默认端口出现 `PermissionError: [WinError 10013]`，通常是 8501 被 Windows 保留、拦截或已有进程占用；使用 README 中的 `18501` 端口启动即可。
